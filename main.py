@@ -1,128 +1,157 @@
-# Number Guesser Program
+# Password Generator    
 
-# Imports 
-import random
+# Imports
+import string
 import time
 import sys
+import random
 
-# Greeting 
-time.sleep(1)
-print("Hello, Welcome to The Number Guesser Have fun (: )")
+# Functions
 
-while True:  
+# Asking to Continue Function 
 
-    # User Input and Validation 
-    try:
-        time.sleep(1)
-        range_Of_Number = int(input("Enter the Range of Numbers you would like the number to be chosen from: "))
-
-    except ValueError:
-        time.sleep(1)
-        print("Error Restarting Program.....")
-        time.sleep(0.5)
-        continue
-
-    # Generate the Number
-    if range_Of_Number >= 1:
-    
-        time.sleep(1)
-        print(f"You Chose to generate from a pool of {range_Of_Number} number's")
-        number = random.randint(1, range_Of_Number)
+def ask_to_continue():
+    user_input1 = input("Would you like to (Quit) or (Continue)?: ").lower().strip()
+    if user_input1 == "quit":
+        time.sleep(0.8)
+        print("Thanks for using the Password Generator hope to see you again!")
+        sys.exit()
+    elif user_input1 == "continue":
+        time.sleep(0.8)
+        return True
+    elif user_input1 == "":
+        time.sleep(0.8)
+        return True
     else:
-        time.sleep(0.5)
-        print("Invalid Input, Please Try Again")
-        time.sleep(0.5)
-        continue
-    
-    attempts = 0
-
-    # Asking How Many Chances they Want
-    print("These are the Options You Have (1, 2, 3, 4) \nPlease Select the Number Correspoding to your choice")
-    time.sleep(0.5)
-    print("1. (EASY) 20 Tries")
-    time.sleep(0.5)
-    print("2. (Normal) 10 Tries")
-    time.sleep(0.5)
-    print("3. (Medium) 7 Tries")
-    time.sleep(0.5)
-    print("4. (HARD) 3 Tries")
-    time.sleep(1)
-    try:
-        time.sleep(0.5)
-        option = int(input("Choose The Option Provided: "))
-    except ValueError:
-        time.sleep(1)
-        print("Error Try Again")
-        continue
-
-    def userChosenAttempts(option1, attempts1):
-        if option == option1:
-            if attempts >= attempts1:
-                lose1 = input(f"You Lost the number was {number}, To Exit Type (Quit) If you would like to play again type (Play):  ").lower().strip()
-                if lose1 == "quit":
-                    time.sleep(1)
-                    print("Okay Shutting down Program...")
-                    sys.exit()
-                elif lose1 == "play":
-                    time.sleep(1)
-                    return False
-                else:
-                    time.sleep(1)
-                    print("Invalid Input, Restarting Program....")
-                    time.sleep(0.5)
-                    return False
-        
-
-    # User Tries to Guess 
-    while True:
-        try:
+        print("Invalid Input, Please Try Again.")
+        return True
+# Guarentee One Option Function 
+def warning_for_no_nl(option, message, message1):
+    if option == "no":
             time.sleep(0.5)
-            user_Guess_Number = int(input("Enter The Number You think has been Generated: "))
-            attempts += 1 
-        except ValueError:
-            time.sleep(1)
-            print("Invalid Input, Please Try Again")
-            continue
-        except TypeError:
-            time.sleep(1)
-            print("Invalid Input, Please Try Again")
-            continue
-        # Validition
-        
-        # If User Guesses it correctley 
-        if user_Guess_Number == number:
+            print("Not using " + message1 + " in password is not Recommended as it can make your password less secure")
             time.sleep(0.5)
-            ask_To_Continue = str(input(f"You Guessed it in {attempts} attempts, Type (Quit) to Exit the Program or Type (Play) to Play Again: ")).lower().strip()
-            if ask_To_Continue == "quit":
-                time.sleep(1)
-                print("Okay Closing Program....")
+            ask = str(input(message)).lower().strip()
+            if ask in ["yes", "y", "yeah", "yep", "sure", "YESSS", "yesssss", "yea", "ye", "yesss"]:
+                pass
+
+            if ask in ["no", "n", "nope", "nah", "NOOOO", "noooooo", "naw", "na", "noooo"]:
+                time.sleep(0.5)
+                print("Okay, Restarting Program.....")
+                time.sleep(0.5)
+                return False
+                
+            else:
+                time.sleep(0.5)
+                print("Invalid Input, Exiting Program.....")
                 time.sleep(0.5)
                 sys.exit()
-            elif ask_To_Continue == "play":
-                time.sleep(1)
-                print("Okay Restarting Program....")
-                time.sleep(0.5)
-                break
 
-        # Lose 
 
-        # If User Chooses 1 for Option
-        userChosenAttempts(1, 20)
-        # If User Chooses 2 for Option
-        userChosenAttempts(2, 10)
-        # If User Chooses 3 for Option
-        userChosenAttempts(3, 7)
-        # If User Chooses 4 for Option 
-        userChosenAttempts(4, 3)
-    
-        # If the User Guesses To Low
-        if user_Guess_Number < number:
+# Variables
+message_l = "Would you like to use letters in your password? (Yes/No): "
+message_n = "Would you like to use numbers in your password? (Yes/No): "
+message_s = "Would you like to use symbols in your password? (Yes/No): "
+
+message1_l = "Are you sure you want to continue without using letters? (Yes/No): "
+message1_n = "Are you sure you want to continue without using numbers? (Yes/No): "
+message1_s = "Are you sure you want to continue without using symbols? (Yes/No): "
+
+# Greeting
+time.sleep(1)
+print("Hello and Welcome to the Password Generator")
+
+while True:
+    # User Input and Validation
+    try:
+        time.sleep(0.5)
+        user_choice = int(input("How long would you like your password to be?: "))
+        if user_choice >= 100 or user_choice <= 6:
+            print("Password must be less than 100 characters long. \nPassword must be more than 6 characters long")
             time.sleep(0.5)
-            print("Number Too Low, Try Again.")
             continue
-        # If the User Guesses To High
-        elif user_Guess_Number > number:
+
+    except Exception as error:
+        print(f"You have error {error}")
+        time.sleep(0.5)
+        print("Restarting Program.....")
+        time.sleep(0.5)
+        continue
+
+    try: 
+        characters = ""
+
+        # Ask If they want to use letters
+        letters = str(input(message_l)).lower().strip()
+       
+        # Ask If they want to use numbers
+        numbers = str(input(message_n)).lower().strip()
+
+        # Ask If they want to use symbols
+        symbols = str(input(message_s)).lower().strip()
+
+        # Normalize User Input
+
+        # This allows the user to input different variations of yes and will make it still work
+        if letters in ["yes", "y", "yeah", "yep", "sure", "YESSS", "yesssss", "yea", "ye", "yesss"]:
+            letters = "yes"
+        if numbers in ["yes", "y", "yeah", "yep", "sure", "YESSS", "yesssss", "yea", "ye", "yesss"]:
+            numbers = "yes"
+        if symbols in ["yes", "y", "yeah", "yep", "sure", "YESSS", "yesssss", "yea", "ye", "yesss"]:
+            symbols = "yes"
+        # This allows the user to input different variations of no and will make it still work
+        if letters in ["no", "n", "nope", "nah", "NOOOO", "noooooo", "naw", "na", "noooo"]:
+            letters = "no"
+        if numbers in ["no", "n", "nope", "nah", "NOOOO", "noooooo", "naw", "na", "noooo"]:
+            numbers = "no"    
+        if symbols in ["no", "n", "nope", "nah", "NOOOO", "noooooo", "naw", "na", "noooo"]:
+            symbols = "no"
+        
+        # Selecting Character Pool
+        if letters == "yes":
+            characters += string.ascii_letters
+        if numbers == "yes":
+            characters += string.digits
+        if symbols == "yes":
+            characters += string.punctuation
+        
+        # Validation
+
+        # If They user puts in an invalid input for any of the options it will ask them to try again and restart the program
+        if letters not in ["yes", "no"] or numbers not in ["yes", "no"] or symbols not in ["yes", "no"]:
+            print("Invalid Input, Please Try Again")
             time.sleep(0.5)
-            print("Number Too High, Try Again.")
             continue
+
+        # If User Puts in no for letters
+        if warning_for_no_nl(letters, message1_l, "letters") == False:
+            continue
+        # If User Puts in no for numbers
+        if warning_for_no_nl(numbers, message1_n, "numbers") == False:
+            continue
+        # If User Puts in no for symbols
+        if warning_for_no_nl(symbols, message1_s, "symbols") == False:
+            continue
+        
+        # If the user chooses no for all options it will ask them to choose at least one option and restart the program
+        if letters == "no" and numbers == "no" and symbols == "no":
+            print("You have to choose at least one of the options to generate a password")
+            print("Restarting Program.....")
+            time.sleep(0.5)
+            continue
+
+    except Exception as error1:
+        print(f"You have error {error1}")
+        time.sleep(0.5)
+        print("Restarting Program.....")
+        time.sleep(0.5)
+        continue 
+
+
+    # Generating the Password
+    password = "".join(random.choice(characters) for _ in range(user_choice))
+    print(f" Your Password is: {password}")
+    print(f"The Length of your password is: {len(password)}")
+    time.sleep(1)
+    ask_to_continue()
 # Code Ends
