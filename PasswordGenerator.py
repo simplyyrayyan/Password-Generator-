@@ -3,7 +3,7 @@
 # MESSAGE: add slow printing and slow input
 
 # Imports
-import secrets, time, sys, string, pyperclip 
+import secrets, sys, string, pyperclip 
 from slow_printing import slow_print, slow_input
 # Opening the Dictionary
 try:
@@ -16,15 +16,15 @@ except FileNotFoundError:
 # Functions
 
 # Asking the user if they want to continue.
-def ask_to_continue():
+def ask_to_continue() -> bool:
     try:
-        user_input1 = slow_input("Would you like to (Quit) or (Continue)?: ").lower().strip()
-        if user_input1 == "quit":
+        ask_to_continue = slow_input("Would you like to (Quit) or (Continue)?: ").lower().strip()
+        if ask_to_continue == "quit":
             slow_print("Thanks for using the Password Generator hope to see you again!")
             sys.exit()
-        elif user_input1 == "continue":
+        elif ask_to_continue == "continue":
             return True
-        elif user_input1 == "":
+        elif ask_to_continue == "":
             return True
         else:
             slow_print("Invalid Input, Please Try Again.")
@@ -33,16 +33,12 @@ def ask_to_continue():
         slow_print("Error Exiting Program.....")
         sys.exit()
 # Checking Password if it contains Dictionary Words
-def contains_dictionary_word(password: str): 
-    
-    try:
+def contains_dictionary_word(password: str) -> bool: 
         password_lower = password.lower()
-        return any(word in password_lower for word in WORD_LIST)
-    except ValueError:
-        slow_print("Error Exiting Program.....")
-        sys.exit()
+        return any(len(word) > 3 and word in password_lower 
+                   for word in WORD_LIST)
 # Saving Password to a Text File Function
-def save_txt_file():
+def save_txt_file() -> None:
     try: 
         ask_to_save = slow_input("Would you like to save the password(s) to a text file? (Yes/No): ").lower().strip()
         if ask_to_save in ["yes", "yea", "y", "ye"]:
@@ -60,7 +56,7 @@ def save_txt_file():
         slow_print("Error Exiting Program.....")
         sys.exit()
 # Copy to Clipboard Function
-def copy_to_clipboard():
+def copy_to_clipboard() -> None:
     try: 
         ask_to_copy = slow_input("Would you like to copy the password(s) to the clipboard? (Yes/No): ").lower().strip()
         if ask_to_copy in ["yes", "yea", "y", "ye"]:
@@ -74,39 +70,49 @@ def copy_to_clipboard():
         slow_print(f"Clipboard ERROR: {e} ")
         slow_print("Exiting Program.....")
         sys.exit()
-# Password Strength Check Function
-def password_strength_check():
-# Password Strength Check 
-    if password_strength >= 5:
-        slow_print(password_message1) # Strong Password
-
-    elif password_strength >= 4:
-        slow_print(password_message2) # Secure Password
-
-    elif password_strength >= 3:
-        slow_print(password_message3) # Okay Password
-
-    elif password_strength >= 2:
-        slow_print(password_message4) # Weak Password
-
-    elif password_strength >= 1:
-        slow_print(password_message5) # Very Weak Password
 # Password Reveal Function and Printing Password
-def password_reveal():
-    hidden_password = str(slow_input("***********, Your Password is Hidden Type (REVEAL) to see: ")).lower().strip()
-    if hidden_password in ["reveal", "REVEAL", "Reveal", "REVEAL", "REAVEAL", "reaveal"]:
-        slow_print(f" {i + 1}. Password: {password} \n Length: {len(password)} \n Rating: {password_strength}/5", speed=(0.05) )
-    else:
-        slow_print("You Typed the wrong command")
-        slow_print("********")
-        ask_to_continue()
+def password_reveal(all_passwords: list, i: int, password_strength: int) -> bool:
+    try:
+        hidden_password = str(slow_input("***********, Your Password is Hidden Type (REVEAL) to see: ")).lower().strip()
+        if hidden_password in ["reveal", "reveal password", "reveal password?"]:
+            reveal_all_passwords = str(slow_input("Would you like to reveal all the passwords? (Yes/No): ")).lower().strip()
+            if reveal_all_passwords in ["yes", "yea", "y", "ye"]:
+                for i in range(len(all_passwords)):
+                    slow_print(
+                        f" {i + 1}. Password: {all_passwords[i]} "
+                        f"\n Length: {len(all_passwords[i])} "
+                        f"\n Rating: {password_strength}/5",
+                        speed=0.05
+                    )
+            elif reveal_all_passwords in ["no", "n"]:
+                slow_print("********, PASSWORD NOT REVEALED.")
+                ask_to_continue()
+                return False
+        
+        elif hidden_password in ["no", "n"]:
+            slow_print("********, PASSWORD NOT REVEALED.")
+            return True
+        
+        else:
+            slow_print("You Typed the wrong command")
+            slow_print("********")
+            return False
+    except ValueError:
+        slow_print("You have ValueError, Exiting Program.....")
+        sys.exit()
+    except TypeError:
+        slow_print("You have a TypeError, Exiting Program.....")
+        sys.exit()
+        
 # If there is a Repeated Character
-def is_repeated_chars(password: str):
+def is_repeated_chars(password: str) -> bool:
+    # Checking if a repeated character is in the password function
     for a, b, c in zip(password, password[1:], password[2:]):
         if a == b == c:
             return True
     return False
-def is_sequential_chars(password: str):
+def is_sequential_chars(password: str) -> bool:
+    # Checking if a sequence is in the password function
     sequences = {
     # Forward Alphabet
     "abc", "bcd", "cde", "def", "efg", "fgh", "ghi", "hij", "ijk", 
@@ -132,8 +138,8 @@ def is_sequential_chars(password: str):
         if seq in password_lower:
             return True
     return False
-def is_keyboard_pattern(password: str):
-
+def is_keyboard_pattern(password: str) -> bool:
+    # Checking if a keyboard pattern is in the password function
     keyboard_patterns = {
         "qwerty", "asdf", "zxcv",
         "qwertyuiop",
@@ -150,14 +156,16 @@ def is_keyboard_pattern(password: str):
         if k_pattern in password_lower:
             return True
     return False
-def is_weak_password(password: str):
-    if contains_dictionary_word(password) == True:
+
+def is_weak_password(password: str) -> bool:
+    # Combining all Weakness Checks to see if the password is weak
+    if contains_dictionary_word(password):
         return True
-    if is_repeated_chars(password) == True:
+    if is_repeated_chars(password):
         return True
-    if is_sequential_chars(password) == True:
+    if is_sequential_chars(password):
         return True
-    if is_keyboard_pattern(password) == True:
+    if is_keyboard_pattern(password):
         return True
     
     return False
@@ -260,7 +268,6 @@ try:
 
     # Generating the Password
         for i in range(count):
-            retry_counter = 0
             password_strength = 0
 
             while True:
@@ -288,11 +295,7 @@ try:
 
                 # Seeing if the password has repeated characters
                 if is_weak_password(password):
-                    retry_counter += 1
-                    if retry_counter >= 100:
-                        break
-                    else:
-                        continue
+                    continue
                 break
 
             # Checking if password has atleast one of each character type
@@ -316,11 +319,8 @@ try:
             # Adding the Passwords to all_paswords list
             all_passwords.append(password)
 
-            # Reveal Password Option
-            password_reveal()
-
-            # Printing and Checking Password Strength 
-            password_strength_check()
+        # Reveal Password Option
+        password_reveal(all_passwords, i, password_strength)
 
         # Asking if they wanted to Save the password(s) to a text file
         save_txt_file()
@@ -334,6 +334,6 @@ try:
 # If user presses Ctrl + C/c then program will exit anywhere
 except KeyboardInterrupt:
     slow_print("Thanks for using Password Generator")
-    sys.exit()
+    sys.exit() 
 
 # Code Ends Here
